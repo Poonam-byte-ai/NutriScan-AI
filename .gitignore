@@ -1,0 +1,29 @@
+
+cat > .gitignore <<'EOF'
+# Python virtual environments
+backend/venv/
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and temporary files
+*.log
+.DS_Store
+Thumbs.db
+
+# Editor settings
+.vscode/
+.idea/
+
+# Large PyTorch model (store separately)
+backend/models/best_model (1).pt
+EOF

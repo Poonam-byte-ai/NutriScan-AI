@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Scan — NutriScan AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=5" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="/" class="logo">🥗 Nutri<span>Scan</span> <small>AI</small></a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="scan.html" class="nav-cta active">Scan Now</a>
+    </div>
+  </div>
+</nav>
+
+<header class="tool-header">
+  <h1>Run a Scan</h1>
+  <p>Upload photos of your eye, nail, and tongue to screen for common nutrient deficiencies.</p>
+</header>
+
+<main>
+  <section class="upload-grid">
+
+    <div class="upload-card eye-card" id="card-eye">
+      <h3>👁️ Eye <small>(upload both photos)</small></h3>
+      <div class="eye-slots">
+        <div>
+          <p class="eye-slot-label">1. Whole eye</p>
+          <label class="drop-zone" for="eye-whole-input">
+            <img id="eye-whole-preview" class="preview" style="display:none" />
+            <span class="drop-text">Click or drop a full eye photo</span>
+          </label>
+          <input type="file" id="eye-whole-input" accept="image/*" hidden />
+        </div>
+        <div>
+          <p class="eye-slot-label">2. Lower eyelid pulled down</p>
+          <label class="drop-zone" for="eye-lid-input">
+            <img id="eye-lid-preview" class="preview" style="display:none" />
+            <span class="drop-text">Click or drop an eyelid photo</span>
+          </label>
+          <input type="file" id="eye-lid-input" accept="image/*" hidden />
+        </div>
+      </div>
+    </div>
+
+    <div class="upload-card" id="card-nail">
+      <h3>💅 Nail</h3>
+      <label class="drop-zone" for="nail-input">
+        <img id="nail-preview" class="preview" style="display:none" />
+        <span class="drop-text">Click or drop a nail photo</span>
+      </label>
+      <input type="file" id="nail-input" accept="image/*" hidden />
+    </div>
+
+    <div class="upload-card" id="card-tongue">
+      <h3>👅 Tongue</h3>
+      <label class="drop-zone" for="tongue-input">
+        <img id="tongue-preview" class="preview" style="display:none" />
+        <span class="drop-text">Click or drop a tongue photo</span>
+      </label>
+      <input type="file" id="tongue-input" accept="image/*" hidden />
+    </div>
+
+  </section>
+
+  <button id="analyze-btn">Analyze</button>
+  <p id="status-msg"></p>
+
+  <section id="results" class="results" style="display:none">
+
+    <h2>Deficiency Summary</h2>
+    <div id="summary-cards" class="summary-grid"></div>
+
+
+    <h2>Model Details</h2>
+    <div id="detail-cards" class="detail-grid"></div>
+
+    <div id="food-recommendations-section" style="display:none">
+      <h2>Food Recommendations</h2>
+
+      <!-- Veg / Non-veg preference toggle -->
+      <div class="diet-toggle">
+        <span class="diet-toggle-label">Food preference:</span>
+        <button type="button" class="diet-btn active" data-diet="veg">🥦 Veg</button>
+        <button type="button" class="diet-btn" data-diet="nonveg">🍗 Non-Veg</button>
+      </div>
+
+      <div id="food-recommendations" class="recommendations-grid"></div>
+    </div>
+
+    <div class="report-download-bar">
+      <button id="download-report-btn" class="btn-download-report">📄 Download PDF Report</button>
+    </div>
+
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>NutriScan AI — always check with your doctor before acting on your results.</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="script.js?v=8"></script>
+</body>
+</html>
