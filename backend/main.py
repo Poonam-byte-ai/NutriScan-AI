@@ -60,23 +60,25 @@ models = {}          # Keras models: "nail", "eye_iron", "eye_vita"
 tongue_model = None  # PyTorch model, loaded separately
 
 
+
 @app.on_event("startup")
 def load_models():
     global tongue_model
 
-    # Full .keras files -- load directly. safe_mode=False allows custom
-    # / Lambda layers that Keras 3 blocks by default.
+    print("[STARTUP] Beginning model loading", flush=True)
+
     for key, path in FULL_MODEL_PATHS.items():
+        print(f"[STARTUP] Loading Keras model: {key} from {path}", flush=True)
         try:
             model = load_model(path, compile=False, safe_mode=False)
             models[key] = model
-            print(f"[OK] Loaded {key} model from {path} -> output shape {model.output_shape}")
+            print(f"[OK] Loaded {key} model: {model.output_shape}", flush=True)
         except Exception as e:
-            print(f"[WARN] Could not load {key} model from {path}: {e}")
+            print(f"[WARN] Could not load {key}: {e}", flush=True)
             models[key] = None
 
-    # Weights-only models (none right now, kept for future use)
     for key, weights_path in WEIGHTS_ONLY_PATHS.items():
+        print(f"[STARTUP] Loading weights model: {key}", flush=True)
         try:
             model = build_organ_model(
                 num_classes=MODEL_NUM_CLASSES[key],
@@ -84,23 +86,24 @@ def load_models():
             )
             model.load_weights(weights_path)
             models[key] = model
-            print(f"[OK] Loaded {key} model from {weights_path} -> output shape {model.output_shape}")
+            print(f"[OK] Loaded {key} weights model", flush=True)
         except Exception as e:
-            print(f"[WARN] Could not load {key} model from {weights_path}: {e}")
+            print(f"[WARN] Could not load {key} weights: {e}", flush=True)
             models[key] = None
 
-    # Tongue -- PyTorch state_dict into HybridCNNViT.
+    print("[STARTUP] Loading tongue model", flush=True)
     try:
         m = HybridCNNViT(num_classes=len(TONGUE_CLASSES), pretrained=False)
         state_dict = torch.load(TONGUE_MODEL_PATH, map_location="cpu")
         m.load_state_dict(state_dict)
         m.eval()
         tongue_model = m
-        print(f"[OK] Loaded tongue model from {TONGUE_MODEL_PATH}")
+        print("[OK] Loaded tongue model", flush=True)
     except Exception as e:
-        print(f"[WARN] Could not load tongue model from {TONGUE_MODEL_PATH}: {e}")
+        print(f"[WARN] Could not load tongue model: {e}", flush=True)
         tongue_model = None
 
+    print("[STARTUP] Model loading finished", flush=True)
 
 # ----------------------------------------------------------------------
 # Helpers
