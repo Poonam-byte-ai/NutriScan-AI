@@ -417,4 +417,4 @@ async def predict_all(
 
 
 # Serve the frontend directly from FastAPI at http://localhost:8000/
-app.mount("/", StaticFiles(directory="../frontend", html=True), name="frontend")
+# app.mount("/", StaticFiles(directory="../frontend", html=True), name="frontend")
