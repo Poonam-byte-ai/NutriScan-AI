@@ -1,58 +1,77 @@
+
 """
 Config for NutriScan AI backend.
-
-Nail model: trained via image_dataset_from_directory, which assigns
-class indices ALPHABETICALLY by folder name:
-    0: Healthy, 1: Leukonychia, 2: Pale, 3: Spoon
-
-Tongue model: trained via torchvision.datasets.ImageFolder, also
-alphabetical:
-    0: cracked, 1: healthy, 2: pale, 3: red
-
-Eye: TWO separate binary models.
-    eye_iron -> lower eyelid (pulled down) photo -> normal / iron_deficient
-    eye_vita -> whole eye photo -> normal_full_eye / vitamin_a_deficient
-Both take raw RGB float32 0-255 at 224x224 (EfficientNet rescales inside).
+Downloads trained models from Hugging Face.
 """
 
-# ----------------------------------------------------------------------
-# Full .keras files (architecture + weights + config bundled in one file)
-# ----------------------------------------------------------------------
+from huggingface_hub import hf_hub_download
+
+# Hugging Face repository
+HF_REPO_ID = "punm12/nutriscan-models"
+HF_REPO_TYPE = "model"
+
+
+def download_model(filename):
+    """Download a real trained model and return its local cached path."""
+    return hf_hub_download(
+        repo_id=HF_REPO_ID,
+        filename=filename,
+        repo_type=HF_REPO_TYPE,
+    )
+
+
+# ---------------------------------------------------------
+# Download the four trained models
+# ---------------------------------------------------------
+
 FULL_MODEL_PATHS = {
-    "nail": "models/my_model.keras",
-    "eye_iron": "models/eye_iron_model.keras",
-    "eye_vita": "models/eye_vita_model.keras",
+    "nail": download_model("my_model.keras"),
+    "eye_iron": download_model("eye_iron_model.keras"),
+    "eye_vita": download_model("eye_vita_model.keras"),
 }
 
-# No weights-only models anymore (eye moved to full .keras files)
 WEIGHTS_ONLY_PATHS = {}
 
 MODEL_NUM_CLASSES = {}
 
-# Image size Keras models expect (width, height)
+# Image size
 IMG_SIZE = (224, 224)
 
-# ----------------------------------------------------------------------
-# Eye thresholds (from eye_meta.json, "screening" mode)
-# ----------------------------------------------------------------------
+# ---------------------------------------------------------
+# Eye prediction thresholds
+# ---------------------------------------------------------
+
 EYE_IRON_THRESHOLD = 0.44
 EYE_VITA_THRESHOLD = 0.42
 
-# ----------------------------------------------------------------------
-# Class label order
-# ----------------------------------------------------------------------
-NAIL_CLASSES = ["Healthy", "Leukonychia", "Pale", "Spoon"]
+# ---------------------------------------------------------
+# Class labels
+# ---------------------------------------------------------
 
-TONGUE_CLASSES = ["cracked", "healthy", "pale", "red"]
+NAIL_CLASSES = [
+    "Healthy",
+    "Leukonychia",
+    "Pale",
+    "Spoon",
+]
 
-# ----------------------------------------------------------------------
-# Tongue model — separate PyTorch pipeline (Hybrid CNN+ViT)
-# ----------------------------------------------------------------------
-TONGUE_MODEL_PATH = "models/best_model (1).pt"
+TONGUE_CLASSES = [
+    "cracked",
+    "healthy",
+    "pale",
+    "red",
+]
 
-# ----------------------------------------------------------------------
-# Category -> underlying nutrient mapping
-# ----------------------------------------------------------------------
+# ---------------------------------------------------------
+# Download the original PyTorch tongue model
+# ---------------------------------------------------------
+
+TONGUE_MODEL_PATH = download_model("best_model (1).pt")
+
+# ---------------------------------------------------------
+# Category-to-nutrient mappings
+# ---------------------------------------------------------
+
 NAIL_TO_NUTRIENT = {
     "Healthy": "normal",
     "Pale": "iron",
@@ -67,16 +86,20 @@ TONGUE_TO_NUTRIENT = {
     "cracked": "vitamin_b",
 }
 
-# Probability threshold above which a nutrient is flagged as "likely deficient"
-DEFICIENCY_THRESHOLD = 0.5
+# ---------------------------------------------------------
+# Prediction thresholds
+# ---------------------------------------------------------
 
-# Any tongue class at or above this probability is reported as a possible sign
+DEFICIENCY_THRESHOLD = 0.5
 TONGUE_SIGNIFICANT_THRESHOLD = 0.20
 
-# ----------------------------------------------------------------------
-# Multimodal weighted fusion for IRON (decision-level / late fusion)
-#   P_Iron = 0.4 * P_Eye + 0.3 * P_Nail + 0.3 * P_Tongue
-# If a modality is not uploaded, the remaining weights are re-normalised
-# so they still sum to 1.
-# ----------------------------------------------------------------------
-IRON_FUSION_WEIGHTS = {"eye": 0.4, "nail": 0.3, "tongue": 0.3}
+# ---------------------------------------------------------
+# Weighted iron fusion
+# ---------------------------------------------------------
+
+IRON_FUSION_WEIGHTS = {
+    "eye": 0.4,
+    "nail": 0.3,
+    "tongue": 0.3,
+}
+

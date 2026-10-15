@@ -14,7 +14,7 @@ Eye: two photos are taken.
   - lower eyelid pulled down -> eye_iron model (iron)
 Both expect raw [0,255] RGB input at 224x224.
 """
-
+from pathlib import Path
 import io
 import numpy as np
 import torch
@@ -420,4 +420,11 @@ async def predict_all(
 
 
 # Serve the frontend directly from FastAPI at http://localhost:8000/
-# app.mount("/", StaticFiles(directory="../frontend", html=True), name="frontend")
+BASE_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIR = BASE_DIR / "frontend"
+
+app.mount(
+    "/",
+    StaticFiles(directory=str(FRONTEND_DIR), html=True),
+    name="frontend",
+)

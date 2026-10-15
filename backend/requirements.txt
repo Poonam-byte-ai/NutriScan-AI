@@ -8,3 +8,5 @@ torch
 torchvision
 timm
 opencv-python-headless
+huggingface_hub
+
